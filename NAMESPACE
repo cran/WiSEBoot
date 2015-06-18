@@ -1,0 +1,4 @@
+exportPattern("^[[:alpha:]]+")
+import(wavethresh)
+importFrom(stats, lm, pf, rnorm, sd, var, cov, aggregate)
+importFrom(graphics, abline, lines, par, plot, points)

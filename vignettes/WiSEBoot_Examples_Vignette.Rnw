@@ -1,7 +1,7 @@
+\documentclass[12pt]{article}    
 %\VignetteEngine{knitr::knitr}
 %\VignetteIndexEntry{WiSEBoot Vignette}
 
-\documentclass[12pt]{article}           
 \usepackage{amsmath}    % need for subequations
 \usepackage{graphicx}   % need for figures
 \usepackage{verbatim}   % useful for program listings

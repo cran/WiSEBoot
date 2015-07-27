@@ -1,0 +1,8 @@
+# WiSEBoot 1.1.0
+
+##Major changes
+none
+
+## Bug fixes
+Updated WiSEHypothesis test function as p-values returned were negative.
+Updated WiSEHypothesis test function XParam and YParam checks as the defaults produced errors.

@@ -96,25 +96,25 @@ function(X, Y, J0, R, popParam=c(0,1), XParam=c(NA,NA), YParam=c(NA, NA),
   if(is.atomic(XParam)!=TRUE || is.null(dim(XParam))!=TRUE){
     stop("XParam should be a vector.")
   }
-  else if(sum(is.na(XParam))==2 && length(XParam)!=2){
-    stop("XParam is of length 2.")
+  else if(length(XParam)!=2){
+    stop("XParam should be a vector of length 2.")
   }
   else if(sum(is.na(XParam))==1){
     stop("XParam should contain 2 numbers of be completely missing.")
   }
-  else if(sum(is.na(XParam))==2 && (length(XParam)!=2 || mode(XParam)!="numeric") ){
+  else if(sum(is.na(XParam))==0 && mode(XParam)!="numeric" ){
     stop("XParam should contain 2 numbers or be completely missing.")
   }
   if(is.atomic(YParam)!=TRUE || is.null(dim(YParam))!=TRUE){
     stop("YParam should be a vector.")
   }
-  else if(sum(is.na(YParam))==2 && length(YParam)!=2){
-    stop("YParam is of length 2.")
+  else if(length(XParam)!=2){
+    stop("XParam should be a vector of length 2.")
   }
   else if(sum(is.na(YParam))==1){
     stop("YParam should contain 2 numbers of be completely missing.")
   }
-  else if(sum(is.na(YParam))==2 && (length(YParam)!=2 || mode(YParam)!="numeric") ){
+  else if(sum(is.na(YParam))==0 && mode(YParam)!="numeric" ){
     stop("YParam should contain 2 numbers or be completely missing.")
   }
 
@@ -261,8 +261,7 @@ function(X, Y, J0, R, popParam=c(0,1), XParam=c(NA,NA), YParam=c(NA, NA),
 
 
   APValue <- pf((R-2)/2/(R-1)*Tsq, df1=2, df2=R-2, lower.tail=FALSE)
-  BPValue <- (rank(c(Tsq, bootTsq), ties.method="average")[1] - R - 1)/R 
-
+  BPValue <- 1 - (rank(c(Tsq, bootTsq), ties.method="average")[1] - 1)/R 
 
   print(paste("The asymptotic p-value is ",prettyNum(APValue, format="g", digits=3), 
               ".  The bootstrap p-value is ", prettyNum(BPValue, format="g", digits=3), sep=''))

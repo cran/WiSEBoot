@@ -1,8 +1,22 @@
+# WiSEBoot 1.2.0
+
+##Major changes
+none
+
+##Bug fixes
+none
+
+##Minor changes
+Added ... plot options in WiSEHypothesisTest, WiSEConfidenceRegion, and smoothTimeSeries functions.
+Changed dependency on package 'wavethresh' to just an import.
+
+
+
 # WiSEBoot 1.1.0
 
 ##Major changes
 none
 
 ## Bug fixes
-Updated WiSEHypothesis test function as p-values returned were negative.
-Updated WiSEHypothesis test function XParam and YParam checks as the defaults produced errors.
+Updated WiSEHypothesisTest function as p-values returned were negative.
+Updated WiSEHypothesisTest function XParam and YParam checks as the defaults produced errors.

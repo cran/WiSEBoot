@@ -39,7 +39,7 @@ set.seed(1414)
 SNR10Boot <- WiSEBoot(SimulatedSNR1.0Series[ ,4], R=10)
 SNR10Boot$MSECriteria
 
-## ----sel6, echo=TRUE, eval=TRUE, out.width='15cm', out.height='7cm', fig.width='15cm', fig.height='7cm'----
+## ----sel6, echo=TRUE, eval=TRUE, out.width='15cm', out.height='7cm'------
 par(mfrow=c(1,2))
 boxplot(SNR10Boot$BootIntercept, 
         main=expression(paste("R=10 Bootstrap Estimates of ", gamma[0])),

@@ -14,7 +14,7 @@ This function is most useful for visualization of the data and primarily used wi
 
 \usage{
 smoothTimeSeries(X, wavFam = "DaubLeAsymm", wavFil = 8, wavBC = "periodic", 
-                 plotLevels = "none")
+                 plotLevels = "none", ...)
 }
 
 
@@ -33,6 +33,9 @@ wavelet boundary condition.  Allowed values are \code{"periodic"} and \code{"sym
 }
   \item{plotLevels}{
 plotting option.  Allowed values are \code{"none"}, \code{"all"}, or an integer between 0 and \eqn{J-1}.  
+}
+  \item{...}{
+additional graphical arguments.  See \code{\link[graphics]{plot}}, \code{\link[graphics]{plot.default}}.
 }
 }
 \details{

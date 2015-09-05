@@ -1,6 +1,7 @@
 \documentclass[12pt]{article}    
-%\VignetteEngine{knitr::knitr}
+
 %\VignetteIndexEntry{WiSEBoot Vignette}
+%\VignetteEngine{knitr::knitr}
 
 \usepackage{amsmath}    % need for subequations
 \usepackage{graphicx}   % need for figures
@@ -14,10 +15,10 @@
 
 
 \title{\texttt{WiSEBoot} Vignette}
-\date{June 24, 2015}
+\date{September 4, 2015}
 \author{Megan Heyman \url{heyma029@umn.edu}}
 \begin{document}
-%\SweaveOpts{concordance=TRUE}
+
 
 \maketitle
 \section{WiSE Bootstrap Model Selection}
@@ -129,7 +130,7 @@ Even in this small bootstrap sample, the correct model was selected.  We can see
 The output from \texttt{WiSEBoot} also may be used to examine the distributions of the $\gamma_0$, $\gamma_1$ and $\gamma$ parameters, estimated by the bootstrap.  The boxplots below show the parametric linear parameter estimates ($\hat{\gamma}_{0b}, \hat{\gamma}_{1b}$).  Because the data was simulated, the population parameters are known to be $\gamma_0=0, \gamma_1=0$.
 
 {\footnotesize
-<<sel6, echo=TRUE, eval=TRUE, out.width='15cm', out.height='7cm', fig.width='15cm', fig.height='7cm'>>=
+<<sel6, echo=TRUE, eval=TRUE, out.width='15cm', out.height='7cm'>>=
 par(mfrow=c(1,2))
 boxplot(SNR10Boot$BootIntercept, 
         main=expression(paste("R=10 Bootstrap Estimates of ", gamma[0])),

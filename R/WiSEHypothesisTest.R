@@ -1,7 +1,7 @@
 WiSEHypothesisTest <-
 function(X, Y, J0, R, popParam=c(0,1), XParam=c(NA,NA), YParam=c(NA, NA),
                                TauSq="log", bootDistn="normal", 
-                               wavFam="DaubLeAsymm", wavFil=8, wavBC="periodic", plot=TRUE){
+                               wavFam="DaubLeAsymm", wavFil=8, wavBC="periodic", plot=TRUE, ...){
 
   ##Check Y and X##
   if(is.atomic(X)!=TRUE || is.atomic(Y)!=TRUE){
@@ -123,6 +123,7 @@ function(X, Y, J0, R, popParam=c(0,1), XParam=c(NA,NA), YParam=c(NA, NA),
   if(!(plot %in% c(TRUE, FALSE))){
     stop("plot is logical.")
   }
+  dots <- list(...)
 
 
 
@@ -268,11 +269,15 @@ function(X, Y, J0, R, popParam=c(0,1), XParam=c(NA,NA), YParam=c(NA, NA),
 
 
   if(plot==TRUE){
-    plot(bootIntercept, bootSlope, 
-         main=paste("Bootstrap Parameter Estimates (under Null), p-value=", prettyNum(BPValue, format="g", digits=3)),
-         xlab="Intercept", ylab="Slope", 
-         xlim=c(min(bootIntercept, dataIntercept), max(bootIntercept, dataIntercept)),
-         ylim=c(min(bootSlope, dataSlope), max(bootSlope, dataSlope)), pch=20)
+    dots$x <- bootIntercept
+    dots$y <- bootSlope
+    if(is.null(dots$main)==TRUE){dots$main <- paste("Bootstrap Parameter Estimates (under Null), p-value=", prettyNum(BPValue, format="g", digits=3))}
+    if(is.null(dots$xlab)==TRUE){dots$xlab <- expression(paste("Intercept (", alpha, ")", sep=''))}
+    if(is.null(dots$ylab)==TRUE){dots$ylab <- expression(paste("Slope (", beta, ")", sep=''))}
+    if(is.null(dots$xlim)==TRUE){dots$xlim <- c(min(bootIntercept, dataIntercept), max(bootIntercept, dataIntercept))}
+    if(is.null(dots$ylim)==TRUE){dots$ylim <- c(min(bootSlope, dataSlope), max(bootSlope, dataSlope))}
+    if(is.null(dots$pch)==TRUE){dots$pch <- 20}
+    do.call("plot", dots)
     abline(v=popParam[1], col="lightgray")
     abline(h=popParam[2], col="lightgray")
     points(dataIntercept, dataSlope, pch=20, cex=2, col="red")

@@ -1,6 +1,6 @@
 smoothTimeSeries <-
 function(X, wavFam="DaubLeAsymm", wavFil=8, wavBC="periodic",
-                             plotLevels="none"){
+                             plotLevels="none", ...){
   ##Check X is a numeric vector##
   if(is.atomic(X)!=TRUE){
     stop("X must be an atomic object")
@@ -41,6 +41,7 @@ function(X, wavFam="DaubLeAsymm", wavFil=8, wavBC="periodic",
   if(!(plotLevels %in% c("none", "all", seq(0, J-1))) ){
     stop("plotLevels is not specified correctly.")
   }
+  dots <- list(...)
 
 
   
@@ -66,17 +67,27 @@ function(X, wavFam="DaubLeAsymm", wavFil=8, wavBC="periodic",
 
   if(plotLevels!="none"){
     if(plotLevels!="all"){
-      plot(seq(1, 2^J), smoothSeries[,1], 
-           main=bquote(paste("Observed Data and Smooth ", J[0],"+1=",.(plotLevels))), 
-           xlab="", ylab="", col="lightgray", type="l")
+      dots$x <- seq(1, 2^J)
+      dots$y <- smoothSeries[,1]
+      if(is.null(dots$main)==TRUE){dots$main <- bquote(paste("Observed Data and Smooth ", J[0],"+1=",.(plotLevels)))}
+      if(is.null(dots$xlab)==TRUE){dots$xlab <- ""}
+      if(is.null(dots$ylab)==TRUE){dots$ylab <- ""}
+      if(is.null(dots$col)==TRUE){dots$col <- "lightgray"}
+      if(is.null(dots$type)==TRUE){dots$type <- "l"}
+      do.call("plot", dots)
       lines(seq(1, 2^J), smoothSeries[, colnames(smoothSeries)%in%c(paste("J0plusOne",plotLevels,sep=''))],
            lwd=2)
     }else{
       par(mfrow=c(ceiling(sqrt(J)), ceiling(J/ceiling(sqrt(J))) ), mai = c(0.4, 0.4, 0.4, 0.4))
       for(i in 1:J){
-        plot(seq(1, 2^J), smoothSeries[,1], 
-             main=bquote(paste("Observed Data and Smooth ", J[0],"+1=",.(i-1))), 
-             xlab="", ylab="", col="lightgray", type="l")
+        dots$x <- seq(1, 2^J)
+        dots$y <- smoothSeries[,1]
+        if(is.null(dots$main)==TRUE){dots$main <- bquote(paste("Observed Data and Smooth ", J[0],"+1=",.(i-1)))}
+        if(is.null(dots$xlab)==TRUE){dots$xlab <- ""}
+        if(is.null(dots$ylab)==TRUE){dots$ylab <- ""}
+        if(is.null(dots$col)==TRUE){dots$col <- "lightgray"}
+        if(is.null(dots$type)==TRUE){dots$type <- "l"}
+        do.call("plot", dots)
         lines(seq(1, 2^J), smoothSeries[, J+2-i], lwd=2)
       }
     }

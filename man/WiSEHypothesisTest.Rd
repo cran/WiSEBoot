@@ -13,7 +13,7 @@ Calculate the p-value for a hypothesis test regarding a linear relationship betw
 WiSEHypothesisTest(X, Y, J0, R, popParam = c(0, 1), XParam = c(NA, NA), 
                    YParam = c(NA, NA), TauSq = "log", bootDistn = "normal", 
                    wavFam = "DaubLeAsymm", wavFil = 8, wavBC = "periodic", 
-                   plot = TRUE)
+                   plot = TRUE, ...)
 }
 
 \arguments{
@@ -55,6 +55,9 @@ wavelet boundary condition.  Allowed values are \code{"periodic"} and \code{"sym
 }
   \item{plot}{
 logical.  If \code{TRUE}, a plot of the bootstrap sample of the linear parameters (generated under the null hypothesis) and the estimated parameters from the data are shown.
+}
+  \item{...}{
+additional graphical arguments.  See \code{\link[graphics]{plot}}, \code{\link[graphics]{plot.default}}.
 }
 }
 

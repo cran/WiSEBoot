@@ -1,5 +1,5 @@
 WiSEConfidenceRegion <-
-function(X, Y, plot=TRUE){
+function(X, Y, plot=TRUE, ...){
   ##Check the Y and X are from WiSE.bootstrap and took only a vector of data
   if(inherits(Y, "WiSEBoot")==FALSE){
     stop("Y should be of class wise_bootstrap (i.e. generated from the WiSE.bootstrap function)")
@@ -33,6 +33,7 @@ function(X, Y, plot=TRUE){
   if(!(plot %in% c(TRUE, FALSE))){
     stop("plot is logical.")
   }
+  dots <- list(...)
 
 
   ##Parameters/quantities from the original bootstrap simulation
@@ -62,12 +63,18 @@ function(X, Y, plot=TRUE){
                      sum((bootEstXWavelet[r, ]-meanBootXWavelet)^2) )
     bootIntercept[r] <- meanBootYWavelet - bootSlope[r]*meanBootXWavelet
   }
+
+
   if(plot==TRUE){
-    plot(bootIntercept, bootSlope, 
-         main=paste("Bootstrap Parameter Estimates with Selected Threshold Level", J0PlusOne-1),
-         xlab="Intercept", ylab="Slope", 
-         xlim=c(min(bootIntercept, dataIntercept), max(bootIntercept, dataIntercept)),
-         ylim=c(min(bootSlope, dataSlope), max(bootSlope, dataSlope)), pch=20)
+    if(is.null(dots$main)==TRUE){dots$main=paste("Bootstrap Parameter Estimates with Selected Threshold Level", J0PlusOne-1)}
+    if(is.null(dots$xlab)==TRUE){dots$xlab=expression(paste("Intercept (", alpha, ")", sep=''))}
+    if(is.null(dots$ylab)==TRUE){dots$ylab=expression(paste("Slope (", beta, ")", sep=''))}
+    if(is.null(dots$xlim)==TRUE){dots$xlim=c(min(bootIntercept, dataIntercept), max(bootIntercept, dataIntercept))}
+    if(is.null(dots$ylim)==TRUE){dots$ylim=c(min(bootSlope, dataSlope), max(bootSlope, dataSlope))}
+    if(is.null(dots$pch)==TRUE){dots$pch=20}
+    dots$x <- bootIntercept
+    dots$y <- bootSlope
+    do.call("plot", dots)
     points(dataIntercept, dataSlope, pch=20, cex=2, col="red")
   }
 

@@ -9,7 +9,7 @@ Calculate the WiSE bootstrap sample of the linear parameters describing a set of
 }
 
 \usage{
-WiSEConfidenceRegion(X, Y, plot = TRUE)
+WiSEConfidenceRegion(X, Y, plot = TRUE, ...)
 }
 
 
@@ -22,6 +22,9 @@ WiSEConfidenceRegion(X, Y, plot = TRUE)
 }
   \item{plot}{
 logical.  If \code{TRUE}, a plot of the bootstrap sample of linear parameters in the wavelet coefficients is generated.
+}
+  \item{...}{
+additional graphical arguments.  See \code{\link[graphics]{plot}}, \code{\link[graphics]{plot.default}}.
 }
 }
 

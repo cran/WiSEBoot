@@ -1,4 +1,4 @@
 exportPattern("^[[:alpha:]]+")
-import(wavethresh)
+importFrom(wavethresh, wd, wr, accessC, accessD, putD, putC, GenW)
 importFrom(stats, lm, pf, rnorm, sd, var, cov, aggregate)
 importFrom(graphics, abline, lines, par, plot, points)

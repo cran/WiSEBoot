@@ -39,22 +39,25 @@ set.seed(1414)
 SNR10Boot <- WiSEBoot(SimulatedSNR1.0Series[ ,4], R=10)
 SNR10Boot$MSECriteria
 
-## ----sel6, echo=TRUE, eval=TRUE, out.width='15cm', out.height='7cm'------
+## ----sel6, echo=TRUE, eval=TRUE, out.width='13cm', out.height='7cm'------
 par(mfrow=c(1,2))
 boxplot(SNR10Boot$BootIntercept, 
         main=expression(paste("R=10 Bootstrap Estimates of ", gamma[0])),
         ylab=expression(hat(gamma)[0][b]))
+abline(h=0, col="red")
+abline(h=)
 boxplot(SNR10Boot$BootSlope, 
         main=expression(paste("R=10 Bootstrap Estimates of ", gamma[1])),
         ylab=expression(hat(gamma)[1][b]))
+abline(h=0, col="red")
 
 ## ----sel7, echo=TRUE, eval=TRUE, out.width='15cm', out.height='7cm'------
 par(mfrow=c(1,2))
 boxplot(SNR10Boot$BootWavelet[,3], 
-        main=expression(paste("R=10 Boot. Est. of level=1, coef. 1, ", gamma)),
+        main=expression(paste("R=10 Boot. Est. of lvl=1, coef=1, ", gamma)),
         ylab=expression(hat(gamma)[b]))
 boxplot(SNR10Boot$BootWavelet[,4], 
-        main=expression(paste("R=10 Boot. Est. of level=1, coef. 2, ", gamma)),
+        main=expression(paste("R=10 Boot. Est. of lvl=1, coef=2, ", gamma)),
         ylab=expression(hat(gamma)[b]))
 
 ## ----hyp1, echo=TRUE, eval=TRUE------------------------------------------
@@ -74,4 +77,6 @@ dim(pad60E$xPad)
 hypObj <- WiSEHypothesisTest(pad60E$xPad[,1], pad60E$xPad[,10], R=10, J0=5, 
                              XParam=pad60E$linearParam[,1], 
                              YParam=pad60E$linearParam[,10])
+hypObj$AsymptoticPValue
+hypObj$BootstrapPValue
 

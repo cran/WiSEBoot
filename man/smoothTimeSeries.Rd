@@ -39,7 +39,7 @@ additional graphical arguments.  See \code{\link[graphics]{plot}}, \code{\link[g
 }
 }
 \details{
-To smooth the series to the \eqn{J0=j} level, all wavelet coefficients at levels \eqn{j+1} and finer are set to 0.  The reverse wavelet transformation is performed upon the thresholded coefficients to obtain each smooth data series.  This method produces smooth data series for \eqn{J0+1} in \{\eqn{0, 1, ..., J-1}\}.  Note, when \eqn{J0+1=0}, this indicates that ALL mother wavelet coefficients have been set to 0.
+To smooth the series to the \eqn{J0=j} level, all wavelet coefficients at levels \eqn{j+1} and finer are set to 0.  The reverse wavelet transformation is performed upon the thresholded coefficients to obtain each smooth data series.  This method produces smooth data series for \eqn{J0+1} in \{\eqn{0, 1, ..., J-1}\}.  Note, when \eqn{J0+1=0}, this indicates that ALL filter wavelet coefficients have been set to 0.
 
 If \code{"all"} plots are requested, all possible smooth series are plotted against the original input data within one graphical device.  This is recommended for users trying to visualize the level of smoothing needed in their data.  Note, \eqn{J0+1} corresponds to the first fine level of coefficients which is set entirely to 0.  
 

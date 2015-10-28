@@ -21,7 +21,7 @@ A matrix containing some simulated, smooth data series.  The smooth series are c
 }
 
 \details{
-The columns contain series created by different wavelet coefficient threshold levels. Smoothed series are available for thresholds of \eqn{J0} in \{0, 1, 2, 3, 4, 5, 6, 7, 8\}.  The rows are the data observations.  Thus, each smooth series is of length \eqn{2^10=1024}. 
+The columns contain series created by different wavelet coefficient threshold levels. Smoothed series are available for thresholds of \eqn{J0} in \{0, 1, 2, 3, 4, 5, 6, 7, 8\}.  The rows are the data observations.  Thus, each smooth series is of length \eqn{2^{10}=1024}. 
 
 The names of each column indicate the threshold (\eqn{J0}).  For example, the 3rd column, named \code{J0.2}, has a threshold of \eqn{J0=2}, and thus 0-valued wavelet coefficients for all mother wavelet coefficients finer than level 2.  
 

@@ -9,52 +9,81 @@
 \usepackage{color}      % use if color is used in text
 \usepackage{hyperref}   % use for hypertext links, including those to external documents and URLs
 \usepackage{amsfonts}
+\usepackage{bm}
+
 
 \setlength{\parskip}{11pt}           % sets spacing between paragraphs
 \setlength\parindent{0pt}            % sets leacing space for paragraphs
 
 
 \title{\texttt{WiSEBoot} Vignette}
-\date{September 4, 2015}
+\date{\today}
 \author{Megan Heyman \url{heyma029@umn.edu}}
 \begin{document}
 
 
 \maketitle
+%-------------------------------------------------------------------------------------------------
+% Model Selection Description
 \section{WiSE Bootstrap Model Selection}
 \label{ModSel}
-Wild Scale-Enhanced (WiSE) Bootstrap is a variant of the wild bootstrap where the model residuals are multiplied by an additional scaling factor.  Theoretical details of the general WiSE methodology may be found in (Chatterjee, 2015).  This package is an implementation of the WiSE bootstrap for a specific case of the partial linear model.  Namely, given an equally-spaced time series of length $T=2^J, J\in \mathbb{I}^+$, we assume that the time series may be written as a partial linear model
+Wild Scale-Enhanced (WiSE) bootstrap is a variant of the wild bootstrap where the model residuals are multiplied by an additional scaling factor.  Theoretical details of the general WiSE bootstrap methodology may be found in (Chatterjee, 2015).  This package is an implementation of the WiSE bootstrap for a specific case of the partial linear model.  Namely, given an equally-spaced time series of length $T=2^J, J\in \mathbb{I}^+$, we assume that a partial linear model adequately describes the time series.
 \begin{equation}
-Y(t) = \gamma_0 + \gamma_1 t + W \gamma  + e(t)
+\bm{Y(t)} = \gamma_0 \bm{1} + \gamma_1 \bm{t} + \bm{\mu(t)}  + \bm{e(t)}
+\label{eqn:init}
+\end{equation}
+$\bm{Y}\in \mathbb{R}^T$ is the observed data, $\bm{t}$ is a vector time indices, and $\bm{\mu(t)}$ is a general function (with some additional assumptions) in time.  The nonparametric component, $\bm{\mu(t)}$, may contain the interesting cycles or signals within the data, so it is of interest to estimate.  However, current methodology does not provide the ability to fully estimate this function.  Thus, it is proposed that this function be approximated by a fixed basis.  If  $W$ is a $T-$ row matrix of a fixed wavelet basis for the discrete wavelet transform (DWT), and $\gamma$ contains the scaling and filter wavelet coefficients, then our approximate model is   
+\begin{equation}
+\bm{Y(t)} \approx \gamma_0 \bm{1} + \gamma_1 \bm{t} + W \bm{\gamma}  + \bm{e(t)}
 \label{eqn:1}
 \end{equation}
-where $Y\in \mathbb{R}^T$ is the observed data, $t$ is a vector time indices, $W$ is a $T-$ row matrix of a fixed wavelet basis, and $\gamma$ contains the scaling and filter wavelet coefficients.  Note, in many cases of the discrete wavelet transform (DWT), especially those implemented within \texttt{wavethresh}, the scaling coefficient is equivalent to $\gamma_0$.  Thus, only the scaling coefficient or $\gamma_0$ should be estimated in any models where this occurs.
+Note, in many cases of the DWT, especially those implemented within \texttt{wavethresh}, the scaling coefficient is equivalent to $\gamma_0$.  Thus, only the scaling coefficient or $\gamma_0$ should be estimated in any models where this occurs.
 
-The quantity $W \gamma$ is a non-parametric component which may represent a signal within the data.  The linear model component($\gamma_0 + \gamma_1 t$) would necessarily change by data application, but we claim it is adequate in the examples presented here.  We propose that models of this type are useful descriptors of various time series, including climate model output.  Under this partial linear model, it is of interest to estimate the set of population parameters $\gamma_0$, $\gamma_1$ and $\gamma$. 
+We propose that models of this type are useful descriptors of various time series, including climate model output.  The quantity $W \bm{\gamma}$ is the approximation of $\bm{\mu(t)}$, which hypothetically contains `interesting' signal within the data.  Thus, the estimates of $\bm{\gamma}$ are of relevance to us.  The parametric, linear component ($\gamma_0 \bm{1} + \gamma_1 \bm{t}$), would necessarily change by data application, but we claim it is adequate in the examples presented here.  This parametric component is important to estimate, but may not contain interesting information for our application.  Thus, in this approximation of the partial linear model, the set of population parameters $\gamma_0$, $\gamma_1$ and $\bm{\gamma}$ are estimated. 
 
-Estimating the full vector of wavelet coefficients, $\gamma$, is problematic with current methodologies.  However, it is typical that the wavelet filter coefficients are sparse, containing many zero or nearly zero-valued entries.  The proposed methodology takes advantage of the sparsity and chooses a strong threshold criteria for the coefficients.  With data of length $2^J$, filter wavelet coefficients exist for levels 0, 1, ..., $J-1$.  If $J_0$ is our threshold, then all coefficients occuring at levels greater than $J_0$ are set to 0.  Essentially, our models assume all fine-level filter coefficients are 0-valued in expectation.  Thresholding $\gamma$ in this fashion decreases the number of parameters such that consistent estimation is possible.
+Estimating the full vector of wavelet coefficients, $\bm{\gamma}$, is problematic with current methodologies.  However, it is typical that the wavelet filter coefficients are sparse, containing many zero or nearly zero-valued entries.  The proposed methodology takes advantage of the sparsity and chooses a strong threshold criteria for the coefficients.  With data of length $2^J$, filter wavelet coefficients exist for levels 0, 1, ..., $J-1$.  Call $J_0$ the threshold.  Then all coefficients occuring at levels greater than $J_0$ are set to 0.  Essentially, our models assume all fine-level filter coefficients are 0-valued in expectation.  Thresholding $\bm{\gamma}$ in this fashion decreases the number of parameters to estimate which implies consistent estimation is possible.  Of course, this is subject to certain assumptions and conditions on the data and model, which are not discussed here.
 
-Assume $J_0$ is a set threshold level.  Then, we may estimate the population parameters $\gamma_0$, $\gamma_1$ and $\gamma$ consistently.  Using least squares estimation, $\hat{\gamma}_0$ and $\hat{\gamma}_1$ are obtained and residuals are defined as $r(t) = Y(t) - \hat{\gamma}_0 - \hat{\gamma}_1 t$.  The DWT is performed on $r(t)$ to obtain a length-$T$ vector of wavelet coefficients.  We apply the threshold and estimate $\gamma$ with $\hat{\gamma}_{J_0}$.  Wavelet residauls are obtained using $r_w(t) = r(t) - W \hat{\gamma}_{J_0}$.  
+Assume fixing the threshold, $J_0$, provides an adequate model.  Then, we may estimate the population parameters $\gamma_0$, $\gamma_1$ and $\bm{\gamma}$ consistently.  Using least squares estimation, $\hat{\gamma}_0$ and $\hat{\gamma}_1$ are obtained and residuals are defined as $\bm{r(t)} = \bm{Y(t)} - \hat{\gamma}_0 \bm{1} - \hat{\gamma}_1 \bm{t}$.  The DWT is performed on $\bm{r(t)}$ to find a length-$T$ vector of wavelet coefficients.  The threshold is then applied and $\bm{\gamma}$ is estimated by $\bm{\hat{\gamma}}_{J_0}$.  Wavelet residauls are defined by $\bm{r_w(t)} = \bm{r(t)} - W \bm{\hat{\gamma}}_{J_0}$.  
 
-To perform the WiSE bootstrap for model \ref{eqn:1} with set threshold $J_0$, we create bootstrap series for $b=1, 2, ..., B$
+The discussion thus far has concerned parameter estimation.  It is usually of interest to also estimate the error associated with the parameters in the model so that inference is possible.  Although all of the assumptions of \ref{eqn:1} have not been stated in this document, it is important to note that the following bootstrap methodology does \emph{not} require that the errors, $\bm{e(t)}$, be homoscedastic or come from a normal distribution.  The WiSE bootstrap is an excellent tool for estimation in situations where the typical, strong assumptions over models do not hold.  Not only do we obtain consistent estimates of the parameters, but also their errors.
+
+To perform the WiSE bootstrap for model \ref{eqn:1} with set threshold $J_0$, create bootstrap series for $b=1, 2, ..., B$
 \begin{equation}
-Y_b(t) = \hat{\gamma}_0 + \hat{\gamma}_1 t + W \hat{\gamma}_{J_0}  + \tau U_b r_w(t)
+\bm{Y_b(t)} = \hat{\gamma}_0 \bm{1} + \hat{\gamma}_1 \bm{t} + W \bm{\hat{\gamma}}_{J_0}  + \tau U_b \bm{r_w(t)}
 \label{eqn:2}
 \end{equation}
-where $\tau$ is a scaling parameter such that $\tau^2/T \to 0$ and $\tau \to \infty$ and the $U_i, i=1,...,B$ are independent, mean 0, variance 1, finite 8$^{th}$ moment random variables.  The $Y_b(t)$ are used to create bootstrap estimates $\hat{\gamma}_{0b}$, $\hat{\gamma}_{1b}$, and $\hat{\gamma}_{J_0 b}$.  The wild bootstrap also allows for estimation of the error variance, which may be heteroscedastic, but this is not implemented within \texttt{WiSEBoot}.  All details of these theoretical conditions and results are contained in (Chatterjee, 2015).
+where $\tau$ is a scaling parameter such that $\tau^2/T \to 0$ and $\tau \to \infty$.  Define $U_b=diag(u_1, u_2, ..., u_T)$ for $b=1,...,B$.  The $u_i, i=1,2, ..., T$ are independent, mean 0, variance 1, finite 8$^{th}$ moment random variables, which are also independent across each bootstrap sample.  The $\bm{Y_b(t)}$ are used to find the bootstrap estimates $\hat{\gamma}_{0b}$, $\hat{\gamma}_{1b}$, and $\bm{\hat{\gamma}}_{J_0 b}$.  The set of $B$ parameter estimates allows the user to examine the variability in each parameter.  The WiSE bootstrap also allows for estimation of the variance associated with the errors, but this is not implemented within \texttt{WiSEBoot}.  All details of theoretical conditions and consistency results are contained in (Chatterjee, 2015).
 
-This WiSE bootstrap re-sampling technique is novel, as it allows for a model selection while concurrently providing (asymptotically) consistent estimators of the model parameters (Chatterjee, 2015).  The prior description set the threshold level, $J_0$.  The \texttt{WiSEBoot} package provides an automatic process to select the wavelet coefficient threshold level.  For a data series of length $2^J$, a WiSE bootstrap sample is created for thresholds of $J_0 \in \{0, 1, ..., J-2\}$ as well as setting all filter wavelet coefficients to 0.  The selected model minimizes the mean of the mean squared-error between the bootstrap estimated model and the provided data.  That is, for any $J_0$, we calculate the mean of the mean-squared error
+
+This WiSE bootstrap re-sampling technique is novel, as it allows for a model selection while concurrently providing (asymptotically) consistent estimates of the model parameters (Chatterjee, 2015).  All prior description sets the threshold level, $J_0$, at a fixed level.  The \texttt{WiSEBoot} package provides an automatic process to select the wavelet coefficient threshold level.  The choice of the threshold determines the number of wavelet coefficients to be estimated, and thus, a model selection.  Technically, speaking the models considered for selection follow a sieve selection scheme (i.e. estimate ALL wavelet coefficients at any levels less than or equal to $J_0$).
+
+The model selection process is conducted as follows.  For a data series of length $2^J$, a WiSE bootstrap sample is created for thresholds of $J_0 \in \{0, 1, ..., J-2\}$ as well as setting all filter wavelet coefficients to 0.  The selected model minimizes the mean of the mean squared-error between the bootstrap estimated model and the provided data.  That is, for any $J_0$, we calculate the mean of the mean-squared error
 \begin{equation*}
-\overline{MSE}_{J_0} =\frac{1}{TB} \sum\limits_{b=1}^B <Y(t)-\hat{\gamma}_{0b} -\hat{\gamma}_{1b}t -W\hat{\gamma}_{J_0 b}, \hspace{1em} Y(t)-\hat{\gamma}_{0b} -\hat{\gamma}_{1b}t -W\hat{\gamma}_{J_0 b}>
+\overline{MSE}_{J_0} =\frac{1}{TB} \sum\limits_{b=1}^B <\bm{Y(t)}-\hat{\gamma}_{0b}\bm{1} -\hat{\gamma}_{1b}\bm{t} -W\bm{\hat{\gamma}}_{J_0 b}, \hspace{1em} \bm{Y(t)}-\hat{\gamma}_{0b}\bm{1} -\hat{\gamma}_{1b}\bm{t} -W\bm{\hat{\gamma}}_{J_0 b}>
 \end{equation*}
-where $< x, y>$ is defined as the inner product of vectors $x$ and $y$.  The selected wavelet coefficient threshold in the model is $J_0^*$ where
+where $< \bm{x}, \bm{y} >$ is defined as the inner product of vectors $\bm{x}$ and $\bm{y}$.  The selected wavelet coefficient threshold in the model is $J_0^*$ where
 \begin{equation*}
 \overline{MSE}_{J_0^*} = \min_{j} \overline{MSE}_j
 \end{equation*}
+%-----------------------------------------------------------------------------------------------
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+%-----------------------------------------------------------------------------------------------
+% Model Selection Simulation
 \section{WiSE Bootstrap Model Selection:  Simulation Example}
-This example uses some simulated wavelet signals to demonstrate the wavelet coefficient threshold selection.  What may be considered as a population-level signal is contained in \texttt{SimulatedSmoothSeries}, which is a matrix. 
+To demonstrate the wavelet coefficient threshold selection, this example uses some simulated wavelet signals.  What may be considered as a population-level signal is contained in \texttt{SimulatedSmoothSeries}, which is a matrix. 
 
 {\footnotesize
 <<sel0, eval=TRUE, echo=FALSE, message=FALSE>>=
@@ -73,8 +102,8 @@ SimulatedSmoothSeries[1:3, ]
 All signals in this matrix were generated using the \texttt{wavethresh} package with a \texttt{"DaubLeAsymm"} (Daubechies Least Asymmetric) wavelet with \texttt{8} vanishing moments and a \texttt{"periodic"} boundary condition.  The column names of \texttt{SimulatedSmoothSeries} indicate the true wavelet coefficient threshold level.  Let's consider the 4$^{th}$ column.  The wavelet coefficients were thresholded at the $J_0=3$ level.  Thus, all finer-level coefficients (levels 4,5,6,7,8, and 9) were set to 0, to create this smooth signal.
 
 
-
-Here is a plot of the signal:
+\newpage
+Here is a plot of the signal in the 4$^{th}$ column:
 
 {\footnotesize
 <<sel2, eval=TRUE, echo=FALSE, out.width='12cm', out.height='8cm'>>=
@@ -84,7 +113,14 @@ plot(seq(1, 2^10), SimulatedSmoothSeries[,4], ty="l",
 @
 }
 
-Data observed from a population signal such as this would be noisy.  The matrices \texttt{SimulatedSNR0.5Series}, \texttt{SimulatedSNR1.0Series}, \texttt{SimulatedSNR1.5Series}, and \texttt{SimulatedSNR2.0Series} contain data series with population signals from \texttt{SimulatedSmoothSeries} and varying levels of added noise.  Defining the signal-to-noise ratio (SNR) as (Variance of Signal)/(Variance of Noise), these matrices contain data series with SNR=0.5, 1.0, 1.5 and 2.0.  It seems reasonable to assume that the signal would be more apparent in the SNR=2.0 series than the SNR=0.5 series.  Here is a look at the data:
+If data were observed from a population signal such as this, the data would be noisy.  The matrices \texttt{SimulatedSNR0.5Series}, \texttt{SimulatedSNR1.0Series}, \texttt{SimulatedSNR1.5Series}, and \texttt{SimulatedSNR2.0Series} contain data series with population signals from \texttt{SimulatedSmoothSeries} and varying levels of added noise.  Defining the signal-to-noise ratio (SNR) as 
+\begin{center}
+SNR=(Variance of Signal)/(Variance of Noise), 
+\end{center}
+these matrices contain data series with SNR=0.5, 1.0, 1.5 and 2.0.  It seems reasonable to assume that the signal would be more apparent in the SNR=2.0 series than the SNR=0.5 series.  
+
+\newpage
+Here is a look at the 'noisy data':
 
 <<sel3, eval=TRUE, echo=FALSE>>=
 data(SimulatedSNR0.5Series); data(SimulatedSNR1.0Series); data(SimulatedSNR1.5Series); data(SimulatedSNR2.0Series)
@@ -115,7 +151,7 @@ smoothPlot <- smoothTimeSeries(SimulatedSNR1.0Series[ ,4], plot="all")
 @
 }
 
-Without knowing the truth, an analyst may guess that the wavelet threshold level could be any of $J_0 \in \{2, 3, 4\}$.  We can use the \texttt{WiSEBoot} function to remove the guess-work and automatically choose a wavelet threshold.  As discussed in Section \ref{ModSel}, the model which achieves the minimum of the mean-squared error is selected.  Let's leave the default wavelet settings again (which exactly match the true signal wavelet here) and look at the MSE criteria for B=10 (\texttt{R=10}) bootstrap samples.  Typically, a larger number of bootstrap samples is used, as these may be generated in parallel.  We choose a lower number in the vignette for the sake of time.
+Without knowing the truth, an analyst may guess that the wavelet threshold level could be any of $J_0 \in \{2, 3, 4\}$.  We can use the \texttt{WiSEBoot} function to remove the guess-work and automatically choose a wavelet threshold.  As discussed in Section \ref{ModSel}, the model which achieves the minimum of the mean-squared error is selected.  Let's leave the default wavelet settings again (which exactly match the true signal wavelet here) and look at the MSE criteria for B=\texttt{R=10} bootstrap samples.  Typically, a larger number of bootstrap samples is used, as these may be generated in parallel.  We choose a lower number in the vignette for the sake of time.
 
 {\footnotesize
 <<sel5, echo=TRUE, eval=TRUE>>=
@@ -127,58 +163,80 @@ SNR10Boot$MSECriteria
 
 Even in this small bootstrap sample, the correct model was selected.  We can see at $J_0 + 1=4$ the mean of the MSE is minimized with a value of \Sexpr{prettyNum(SNR10Boot$MSECriteria[6,2], digits=3)}.  The reader should keep in mind that this is a simulation example, so a desirable result is not surprising.
 
-The output from \texttt{WiSEBoot} also may be used to examine the distributions of the $\gamma_0$, $\gamma_1$ and $\gamma$ parameters, estimated by the bootstrap.  The boxplots below show the parametric linear parameter estimates ($\hat{\gamma}_{0b}, \hat{\gamma}_{1b}$).  Because the data was simulated, the population parameters are known to be $\gamma_0=0, \gamma_1=0$.
+
+
+Now, we have an automatically selected model with threshold $J_0=3$.  The output \texttt{WiSEBoot} object, called \texttt{SNR10Boot}, contains not only the model selection, but also the estimated parameters from each bootstrap sample in the selected model.  Thus, the distributions of the $\gamma_0$, $\gamma_1$ and $\gamma$ parameters may be examined by visualizing the bootstrap estimates.  
+
+The boxplots below show the empirical distributions of the parametric linear parameter estimates ($\hat{\gamma}_{0b}, \hat{\gamma}_{1b}$).  Because the data was simulated, the population parameters are known to be $\gamma_0=0, \gamma_1=0$.
 
 {\footnotesize
-<<sel6, echo=TRUE, eval=TRUE, out.width='15cm', out.height='7cm'>>=
+<<sel6, echo=TRUE, eval=TRUE, out.width='13cm', out.height='7cm'>>=
 par(mfrow=c(1,2))
 boxplot(SNR10Boot$BootIntercept, 
         main=expression(paste("R=10 Bootstrap Estimates of ", gamma[0])),
         ylab=expression(hat(gamma)[0][b]))
+abline(h=0, col="red")
+abline(h=)
 boxplot(SNR10Boot$BootSlope, 
         main=expression(paste("R=10 Bootstrap Estimates of ", gamma[1])),
         ylab=expression(hat(gamma)[1][b]))
+abline(h=0, col="red")
 @
 }
 
-As always in any type of bootstrap, the bootstrap distribution will be centered around the original estimate from the data.  We can see that these boxplots aren't exactly centered at 0 because of this centering issue associated with the bootstrap.
+As always in any type of bootstrap, the bootstrap distribution will be centered around the original estimate from the data.  We can see that these boxplots aren't exactly centered at 0 because of this centering issue associated with the bootstrap.  (Keep in mind there are only \texttt{R=10} bootstrap samples too.)
 
-If we wanted to look at the bootstrap distribution of any individual filter wavelet coefficient, the output from \texttt{WiSEBoot} also makes this possible.  Below are the bootstrap distributions of the level=1 filter coefficients.
+Likewise, any individual non-thresholded filter wavelet coefficient may be visualized.  Below are the bootstrap distributions of the level=1 filter coefficients.
 
 {\footnotesize
 <<sel7, echo=TRUE, eval=TRUE, out.width='15cm', out.height='7cm'>>=
 par(mfrow=c(1,2))
 boxplot(SNR10Boot$BootWavelet[,3], 
-        main=expression(paste("R=10 Boot. Est. of level=1, coef. 1, ", gamma)),
+        main=expression(paste("R=10 Boot. Est. of lvl=1, coef=1, ", gamma)),
         ylab=expression(hat(gamma)[b]))
 boxplot(SNR10Boot$BootWavelet[,4], 
-        main=expression(paste("R=10 Boot. Est. of level=1, coef. 2, ", gamma)),
+        main=expression(paste("R=10 Boot. Est. of lvl=1, coef=2, ", gamma)),
         ylab=expression(hat(gamma)[b]))
 @
 }
+%-----------------------------------------------------------------------------------------------
 
 
 
 
+
+
+
+
+%-----------------------------------------------------------------------------------------------
+% Hypothesis Test Theory
+\newpage
 \section{WiSE Bootstrap Hypothesis Test}
-Next we provide a brief introduction to a hypothesis test of the wavelet coefficients from two data series of equal lengths.  This hypothesis testing methodology is discussed in detail in (Braverman, 2015).  This theoretical discussion is meant to give users of the \texttt{WiSEHypothesisTest} and \texttt{WiSEConfidenceRegion} a general idea of the methodology occurring.
+Next we provide a brief introduction to a hypothesis test of the wavelet coefficients from two data series of equal lengths.  This methodology is discussed in detail in (Braverman, 2015).  Here, the theoretical discussion is meant to give users of the \texttt{WiSEHypothesisTest} and \texttt{WiSEConfidenceRegion} a general idea of what mathematics are running in the background.
 
-Consider two equally-spaced data series of length $T=2^J, J \in \mathbb{I}^+$.  Each data series follows the model from eqn. \ref{eqn:1}.  That is,
+Consider two equally-spaced data series of length $T=2^J, J \in \mathbb{I}^+$.  Each data series may be modeled by eqn. \ref{eqn:init} and approximated by eqn. \ref{eqn:1}.  That is,
 \[
-Y(t) = \gamma_{y0} + \gamma_{y1} t + W \gamma_{y}  + e_y(t)
+\bm{Y(t)} = \gamma_{y0}\bm{1} + \gamma_{y1} \bm{t} + W \bm{\gamma}_{y}  + \bm{e(t)}_y
 \]
 \[
-X(t) = \gamma_{x0} + \gamma_{x1} t + W \gamma_{x}  + e_x(t)
+\bm{X(t)} = \gamma_{x0}\bm{1} + \gamma_{x1} \bm{t} + W \bm{\gamma}_{x}  + \bm{e(t)}_x
 \]
 
-Users of these functions wish compare the signals of these two series. Namely, the user may test the linear relationship between the two sets of wavelet coefficients:  $\gamma_{y} = \alpha + \beta \gamma_{x}$.  The null hypothesis in \texttt{WiSEHypothesisTest} is
+Notice, the same wavelet basis, $W$, is used in each approximation, but separate parameters are allowed.  Users of the \texttt{WiSEHypothesisTest} function may wish compare the `interesting' signals within these two series. Recalling the discussion from Section \ref{ModSel}, we may decide that the `interesting' signals are $\bm{\mu(t)}_y$ and $\bm{\mu(t)}_x$.  With the wavelet basis approximation, the user tests the linear relationship between the two sets of wavelet coefficients:  $\bm{\gamma}_{y} = \alpha \bm{1} + \beta \bm{\gamma}_{x}$.  The null hypothesis in \texttt{WiSEHypothesisTest} is
 \[ H_0:  \alpha = m, \beta= n, \hspace{1em} m,n \in\mathbb{R}\]
-In Braverman, 2015, values of $m=0$ and $n=1$ are tested.  If the null hypothesis in this specific scenario is not rejected, then we may say that signal within the climate model output matches the observed climate.
 
-The algorithm to generate the WiSE bootstrap sample under the null hypothesis changes slightly.  Please see (Braverman, 2015) for the details.
+In (Braverman, 2015), values of $m=0$ and $n=1$ are tested.  If the null hypothesis in this specific scenario is not rejected, then we may say that there is not sufficient evidence to conclude that the signal within the climate model output does not match the observed climate.
+The algorithm to generate the WiSE bootstrap sample changes slightly so that we are sampling under the null hypothesis.  Please see (Braverman, 2015) for the details.
+%-------------------------------------------------------------------------------------------------
 
+
+
+
+
+
+%------------------------------------------------------------------------------------------------
+% Hypothesis Test Analysis
 \section{WiSE Bootstrap for Hypothesis Testing: Climate Model Signals}
-
 An example analysis of climate model data is presented here.  The full analysis of the climate models at some specific grid-cells is available in (Braverman, 2015).  Within the \texttt{WiSEBoot} package, two sets of climate model outputs and observed climate are available.  Here, we will look at the data in \texttt{CM20N20S60E}. 
 
 {\footnotesize
@@ -187,9 +245,9 @@ data(CM20N20S60E)
 CM20N20S60E[1:3,]
 @
 }
-This data matrix contains runs from AIRS (observed climate), 4 runs of the IPSL model, and 6 runs of the MIROC5 model.  The model runs are obtained by choosing different starting parameters.  This matrix contains a set of specific humidity observations/outputs between 20N and 20S at 60E and an altitude of 500 hPa.  Observations are daily, from October 1, 2002 to December 29, 2010.
+This data matrix contains data from AIRS (what we call `observed climate'), 4 runs of the IPSL model, and 6 runs of the MIROC5 model.  Each of the model runs is obtained by choosing different starting parameters.  Specifically, this matrix contains a set of specific humidity observations/outputs between 20N and 20S at 60E and an altitude of 500 hPa.  Observations are daily, from October 1, 2002 to December 29, 2010.
 
-We'll specifically compare the signals in AIRS and MIROC5, run 5.  Here are some plots of the raw data.
+In this analysis, we'll compare the signals in AIRS and MIROC5, run 5.  Here are some plots of the raw data.
 
 {\footnotesize
 <<hyp2, echo=TRUE, eval=TRUE, out.width='15cm', out.height='15cm'>>=
@@ -199,7 +257,7 @@ plot.ts(CM20N20S60E[,10], main="MIROC5, run 5", ylab="Model Climate")
 @
 }
 
-Before it is possible to use any of the WiSE bootstrap methodology, the data must first be of length $T=2^J$ for a positive integer, $J$.  The raw data contains 3012 observations.  Thus, we first use the \texttt{padMatrix} function to lengthen each series simultaneously.
+Before it is possible to use the WiSE bootstrap methodology with a wavelet basis approximation, the data must be of length $T=2^J$ for a positive integer, $J$.  The raw data contains 3012 observations.  Thus, we begin by using the \texttt{padMatrix} function to lengthen each series simultaneously.  Conversely, the user could truncate the data to the closest power of 2 in length, which may be more highly recommended when it is OK to exclude some of the data.
 
 {\footnotesize
 <<hyp3, echo=TRUE, eval=TRUE>>=
@@ -208,9 +266,9 @@ dim(pad60E$xPad)
 @
 }
 
-The code above uses the default options of padding at both sides of the data series by reflecting.  The linear trend is not replaced (default) to the padded data matrix because we may easily input the estimated linear (parametric) parameters to the hypothesis testing function.  This data is now of length $2^{12}$.  
+The code above uses the default options within \texttt{padMatrix} of padding at both sides of the data series by reflecting.  The linear trend is not replaced (default) to the padded data matrix because we may easily input the estimated linear (parametric) parameters to the hypothesis testing function.  This data is now of length $2^{12}$.  
 
-The hypothesis testing function requires that the user choose a wavelet coefficient threshold level.  This may be done automatically with the \texttt{WiSEBoot} function, by inputting both series as a 4096 x 2 matrix.  Here, we choose to use a threshold of $J_0=5$, as this corresponds to a cycle of 128 days.
+The hypothesis testing function requires that the user choose a wavelet coefficient threshold level.  This may be done automatically with the \texttt{WiSEBoot} function first, by inputting both series as a 4096 x 2 matrix.  Here, we choose to just set a threshold of $J_0=5$, as this corresponds to a cycle of 128 days.
 
 Now that the data is of correct length, we may test the hypothesis
 \[ H_0: \alpha=0, \beta=1\]
@@ -221,12 +279,14 @@ Now that the data is of correct length, we may test the hypothesis
 hypObj <- WiSEHypothesisTest(pad60E$xPad[,1], pad60E$xPad[,10], R=10, J0=5, 
                              XParam=pad60E$linearParam[,1], 
                              YParam=pad60E$linearParam[,10])
+hypObj$AsymptoticPValue
+hypObj$BootstrapPValue
 @
 }
 
-The function prints two p-values.  The asymptotic p-value is based upon the distribution of Hotelling's T$^2$ and the test statistic utilizes the variance-covariance matrix from the bootstrap sample.  The bootstrap p-value computes a Hotelling's T$^2$ test statistic for each bootstrap sample, and the quantile of the data-based Hotelling's T$^2$ is computed from the bootstrap sample.  A plot of the bootstrap sample and observed data parameter estimates is also generated optionally.
+The function calculates two p-values.  The asymptotic p-value is based upon the distribution of Hotelling's T$^2$ and the test statistic utilizes the variance-covariance matrix from the bootstrap sample.  The bootstrap p-value computes a Hotelling's T$^2$ test statistic for each bootstrap sample, and the quantile of the data-based Hotelling's T$^2$ is computed from the bootstrap sample.  A plot of the bootstrap sample and observed data parameter estimates is also generated optionally.
 
-We can see that both the asymptotic and bootstrap p-values indicate that the null hypothesis should be rejected.  This is  not surprising based upon the generated plot.  The $\hat{\alpha}$ and $\hat{\beta}$ estimated from the data (red point) is clearly outside of the cloud of bootstrap sample points (black).  The gray vertical and horizontal lines represent the parameter values under the null hypothesis.  
+We can see that both the asymptotic and bootstrap p-values indicate that the null hypothesis should be rejected.  This is not surprising, especially after examining the generated plot.  The $\hat{\alpha}$ and $\hat{\beta}$ estimated from the data (red point) is clearly outside of the cloud of bootstrap sample points (black).  The gray vertical and horizontal lines represent the parameter values under the null hypothesis.  
 
 
 \section*{Acknowledgments}

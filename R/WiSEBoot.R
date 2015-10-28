@@ -1,5 +1,5 @@
 WiSEBoot <-
-function(X, R, XParam=NA, TauSq="log", bootDistn="normal", 
+function(X, R=100, XParam=NA, TauSq="log", bootDistn="normal", 
                            by.row=FALSE, J0=NA, 
                            wavFam="DaubLeAsymm", wavFil=8, wavBC="periodic"){
 
@@ -107,7 +107,7 @@ function(X, R, XParam=NA, TauSq="log", bootDistn="normal",
   }
 
   ##Check bootDistn##
-  if(bootDistn!="normal"){
+  if(!( bootDistn %in% c("normal","uniform","exponential","laplace","lognormal","gumbel","t5","t8","t14") )){
     stop("Invalid value for bootDistn.")
   }
 
@@ -173,7 +173,28 @@ function(X, R, XParam=NA, TauSq="log", bootDistn="normal",
     meanOfMSE <- rep(0, J)                              #evaluation criteria (min) for smoothing level
 
     for (j in 1:J){
-      bootWtMatrix <- sqrt(vBoot)*matrix(rnorm(R*2^J, mean=0, sd=1), nrow=R, ncol=2^J)
+      if(bootDistn=="normal"){
+        bootWtMatrix <- sqrt(vBoot)*matrix(rnorm(R*2^J, mean=0, sd=1), nrow=R, ncol=2^J)
+      }else if(bootDistn=="uniform"){
+        bootWtMatrix <- sqrt(vBoot)*matrix(runif(R*2^J, min=-sqrt(3), max=sqrt(3)), nrow=R, ncol=2^J)
+      }else if(bootDistn=="exponential"){
+        bootWtMatrix <- sqrt(vBoot)*matrix(rexp(R*2^J)-1, nrow=R, ncol=2^J)
+      }else if(bootDistn=="laplace"){
+        uniforms <- runif(R*2^J, min=-1/2, max=1/2)
+        bootWtMatrix <- sqrt(vBoot)*matrix(-1/sqrt(2)*sign(uniforms)*log(1-2*abs(uniforms)), nrow=R, ncol=2^J)
+      }else if(bootDistn=="lognormal"){
+        sig <- 1
+        mu  <- (log(1/(exp(sig)-1))-sig)/2
+        bootWtMatrix <- sqrt(vBoot)*matrix(rlnorm(R*2^J, meanlog=mu, sdlog=sig)-exp(mu+sig/2), nrow=R, ncol=2^J)
+      }else if(bootDistn=="gumbel"){
+        bootWtMatrix <- sqrt(vBoot)*matrix(rgumbel(R*2^J, scale=sqrt(6/pi^2), location=sqrt(6/pi^2)*digamma(1)), nrow=R, ncol=2^J)
+      }else if(bootDistn=="t5"){
+        bootWtMatrix <- sqrt(vBoot)*matrix(rt(R*2^J, df=5)*sqrt(3/5), nrow=R, ncol=2^J)
+      }else if(bootDistn=="t8"){
+        bootWtMatrix <- sqrt(vBoot)*matrix(rt(R*2^J, df=8)*sqrt(6/8), nrow=R, ncol=2^J)
+      }else if(bootDistn=="t14"){
+        bootWtMatrix <- sqrt(vBoot)*matrix(rt(R*2^J, df=14)*sqrt(12/14), nrow=R, ncol=2^J)
+      }
       MSE <- rep(NA, R)
   
       for(r in 1:R){
@@ -232,7 +253,26 @@ function(X, R, XParam=NA, TauSq="log", bootDistn="normal",
     bootIntercept <- matrix(nrow=R, ncol=seriesSamp)
     bootSlope <- matrix(nrow=R, ncol=seriesSamp)
     bootWaveCoef <- array(dim=c(R, 2^J, seriesSamp) )
-    bootWtMatrix <- sqrt(vBoot)*matrix(rnorm(R*2^J, mean=0, sd=1), nrow=R, ncol=2^J)
+    if(bootDistn=="normal"){
+      bootWtMatrix <- sqrt(vBoot)*matrix(rnorm(R*2^J, mean=0, sd=1), nrow=R, ncol=2^J)
+    }else if(bootDistn=="uniform"){
+      bootWtMatrix <- sqrt(vBoot)*matrix(runif(R*2^J, min=-sqrt(3), max=sqrt(3)), nrow=R, ncol=2^J)
+    }else if(bootDistn=="exponential"){
+      bootWtMatrix <- sqrt(vBoot)*matrix(rexp(R*2^J)-1, nrow=R, ncol=2^J)
+    }else if(bootDistn=="laplace"){
+      uniforms <- runif(R*2^J, min=-1/2, max=1/2)
+      bootWtMatrix <- sqrt(vBoot)*matrix(-1/sqrt(2)*sign(uniforms)*log(1-2*abs(uniforms)), nrow=R, ncol=2^J)
+    }else if(bootDistn=="lognormal"){
+      bootWtMatrix <- sqrt(vBoot)*matrix(rlnorm(R*2^J, meanlog=1-sig^2/2, sdlog=sig)-exp(1), nrow=R, ncol=2^J)
+    }else if(bootDistn=="gumbel"){
+      bootWtMatrix <- sqrt(vBoot)*matrix(rgumbel(R*2^J, scale=sqrt(6/pi^2), location=sqrt(6/pi^2)*digamma(1)), nrow=R, ncol=2^J)
+    }else if(bootDistn=="t5"){
+      bootWtMatrix <- sqrt(vBoot)*matrix(rt(R*2^J, df=5)*sqrt(3/5), nrow=R, ncol=2^J)
+    }else if(bootDistn=="t8"){
+      bootWtMatrix <- sqrt(vBoot)*matrix(rt(R*2^J, df=8)*sqrt(6/8), nrow=R, ncol=2^J)
+    }else if(bootDistn=="t14"){
+      bootWtMatrix <- sqrt(vBoot)*matrix(rt(R*2^J, df=14)*sqrt(12/14), nrow=R, ncol=2^J)
+    }
     MSE <- rep(0, R)
 
     for(r in 1:R){
@@ -273,9 +313,10 @@ function(X, R, XParam=NA, TauSq="log", bootDistn="normal",
   }
 
 
-  structure(invisible(list(MSECriteria=MSECriteria, BootIntercept=bootIntercept, 
+  structure(invisible(list( MSECriteria=MSECriteria, BootIntercept=bootIntercept, 
                  BootSlope=bootSlope, BootWavelet=bootWaveCoef, DataWavelet=DataWavelet,
-                 wavFam=wavFam, wavFil=wavFil, wavBC=wavBC, TauSq=TauSq, bootDistn=bootDistn, by.row=by.row)), 
+                 wavFam=wavFam, wavFil=wavFil, wavBC=wavBC, TauSq=TauSq, bootDistn=bootDistn, by.row=by.row,
+                 XParam=t(matrix(cbind(estpIntercept, estpSlope), ncol=2)) )), 
             class="WiSEBoot")
 
 }

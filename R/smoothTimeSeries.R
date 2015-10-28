@@ -69,7 +69,7 @@ function(X, wavFam="DaubLeAsymm", wavFil=8, wavBC="periodic",
     if(plotLevels!="all"){
       dots$x <- seq(1, 2^J)
       dots$y <- smoothSeries[,1]
-      if(is.null(dots$main)==TRUE){dots$main <- bquote(paste("Observed Data and Smooth ", J[0],"+1=",.(plotLevels)))}
+      if(is.null(dots$main)==TRUE){dots$main <- bquote("Observed Data and Smooth " ~ J[0] ~ "+1=" ~ .(plotLevels))}
       if(is.null(dots$xlab)==TRUE){dots$xlab <- ""}
       if(is.null(dots$ylab)==TRUE){dots$ylab <- ""}
       if(is.null(dots$col)==TRUE){dots$col <- "lightgray"}
@@ -82,7 +82,10 @@ function(X, wavFam="DaubLeAsymm", wavFil=8, wavBC="periodic",
       for(i in 1:J){
         dots$x <- seq(1, 2^J)
         dots$y <- smoothSeries[,1]
-        if(is.null(dots$main)==TRUE){dots$main <- bquote(paste("Observed Data and Smooth ", J[0],"+1=",.(i-1)))}
+        if(is.null(dots$main)==TRUE || dotsMainPop==1){
+          dots$main <- bquote("Observed Data and Smooth " ~ J[0] ~ "+1=" ~ .(i-1))
+          dotsMainPop <- 1  #to change the plot title each time (dots$main will not be null after first loop)
+        }else{ dotsMainPop <- 0}
         if(is.null(dots$xlab)==TRUE){dots$xlab <- ""}
         if(is.null(dots$ylab)==TRUE){dots$ylab <- ""}
         if(is.null(dots$col)==TRUE){dots$col <- "lightgray"}

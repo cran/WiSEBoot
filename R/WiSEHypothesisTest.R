@@ -1,5 +1,5 @@
 WiSEHypothesisTest <-
-function(X, Y, J0, R, popParam=c(0,1), XParam=c(NA,NA), YParam=c(NA, NA),
+function(X, Y, J0, R=100, popParam=c(0,1), XParam=c(NA,NA), YParam=c(NA, NA),
                                TauSq="log", bootDistn="normal", 
                                wavFam="DaubLeAsymm", wavFil=8, wavBC="periodic", plot=TRUE, ...){
 
@@ -80,7 +80,7 @@ function(X, Y, J0, R, popParam=c(0,1), XParam=c(NA,NA), YParam=c(NA, NA),
 
 
   ##Check bootDistn##
-  if(bootDistn!="normal"){
+  if(!( bootDistn %in% c("normal","uniform","exponential","laplace","lognormal","gumbel","t5","t8","t14") )){
     stop("Invalid value for bootDistn.")
   }
 
@@ -200,8 +200,41 @@ function(X, Y, J0, R, popParam=c(0,1), XParam=c(NA,NA), YParam=c(NA, NA),
   bootEstXWavelet <- matrix(nrow=R, ncol=length(estYWavelet))
   bootSlope <- rep(NA, R)
   bootIntercept <- rep(NA, R)
-  bootWtMatrix <- sqrt(vBoot)*matrix(rnorm(R*2^J, mean=0, sd=1), nrow=R, ncol=2^J)
-  bootWtMatrix2 <- sqrt(vBoot)*matrix(rnorm(R*2^J, mean=0, sd=1), nrow=R, ncol=2^J)
+
+  ##Set the bootstrap weight matrix based upon specified distribution
+  if(bootDistn=="normal"){
+    bootWtMatrix <- sqrt(vBoot)*matrix(rnorm(R*2^J, mean=0, sd=1), nrow=R, ncol=2^J)
+    bootWtMatrix2 <- sqrt(vBoot)*matrix(rnorm(R*2^J, mean=0, sd=1), nrow=R, ncol=2^J)
+  }else if(bootDistn=="uniform"){
+    bootWtMatrix <- sqrt(vBoot)*matrix(runif(R*2^J, min=-sqrt(3), max=sqrt(3)), nrow=R, ncol=2^J)
+    bootWtMatrix2 <- sqrt(vBoot)*matrix(runif(R*2^J, min=-sqrt(3), max=sqrt(3)), nrow=R, ncol=2^J)
+  }else if(bootDistn=="exponential"){
+    bootWtMatrix <- sqrt(vBoot)*matrix(rexp(R*2^J)-1, nrow=R, ncol=2^J)
+    bootWtMatrix2 <- sqrt(vBoot)*matrix(rexp(R*2^J)-1, nrow=R, ncol=2^J)
+  }else if(bootDistn=="laplace"){
+    uniforms <- runif(R*2^J, min=-1/2, max=1/2)
+    bootWtMatrix <- sqrt(vBoot)*matrix(-1/sqrt(2)*sign(uniforms)*log(1-2*abs(uniforms)), nrow=R, ncol=2^J)
+    uniforms2 <- runif(R*2^J, min=-1/2, max=1/2)
+    bootWtMatrix2 <- sqrt(vBoot)*matrix(-1/sqrt(2)*sign(uniforms)*log(1-2*abs(uniforms)), nrow=R, ncol=2^J)
+  }else if(bootDistn=="lognormal"){
+    sig <- 1
+    mu  <- (log(1/(exp(sig)-1))-sig)/2
+    bootWtMatrix <- sqrt(vBoot)*matrix(rlnorm(R*2^J, meanlog=mu, sdlog=sig)-exp(mu+sig/2), nrow=R, ncol=2^J)
+    bootWtMatrix2 <- sqrt(vBoot)*matrix(rlnorm(R*2^J, meanlog=mu, sdlog=sig)-exp(mu+sig/2), nrow=R, ncol=2^J)
+  }else if(bootDistn=="gumbel"){
+    bootWtMatrix <- sqrt(vBoot)*matrix(rgumbel(R*2^J, scale=sqrt(6/pi^2), location=sqrt(6/pi^2)*digamma(1)), nrow=R, ncol=2^J)
+    bootWtMatrix2 <- sqrt(vBoot)*matrix(rgumbel(R*2^J, scale=sqrt(6/pi^2), location=sqrt(6/pi^2)*digamma(1)), nrow=R, ncol=2^J)
+  }else if(bootDistn=="t5"){
+    bootWtMatrix <- sqrt(vBoot)*matrix(rt(R*2^J, df=5)*sqrt(3/5), nrow=R, ncol=2^J)
+    bootWtMatrix2 <- sqrt(vBoot)*matrix(rt(R*2^J, df=5)*sqrt(3/5), nrow=R, ncol=2^J)
+  }else if(bootDistn=="t8"){
+    bootWtMatrix <- sqrt(vBoot)*matrix(rt(R*2^J, df=8)*sqrt(6/8), nrow=R, ncol=2^J)
+    bootWtMatrix2 <- sqrt(vBoot)*matrix(rt(R*2^J, df=8)*sqrt(6/8), nrow=R, ncol=2^J)
+  }else if(bootDistn=="t14"){
+    bootWtMatrix <- sqrt(vBoot)*matrix(rt(R*2^J, df=14)*sqrt(12/14), nrow=R, ncol=2^J)
+    bootWtMatrix2 <- sqrt(vBoot)*matrix(rt(R*2^J, df=14)*sqrt(12/14), nrow=R, ncol=2^J)
+  }
+
   for(r in 1:R){
     bootXData <- (matrix(1, nrow=2^J, ncol=1) %*% estXIntercept + 
                          matrix(seq(1, 2^J), nrow=2^J, ncol=1) %*% estXSlope + 
@@ -252,21 +285,18 @@ function(X, Y, J0, R, popParam=c(0,1), XParam=c(NA,NA), YParam=c(NA, NA),
   invS <- solve(matrix(cbind(c(var(bootIntercept), cov(bootIntercept, bootSlope)),
                              c(cov(bootIntercept, bootSlope), var(bootSlope))), ncol=2))
   diffMat <- matrix(c(dataIntercept-popParam[1], dataSlope-popParam[2]), ncol=1)
-  Tsq <- R/vBoot * t(diffMat) %*% invS %*% diffMat
+  Tsq <- vBoot * t(diffMat) %*% invS %*% diffMat
+  numbCoef <- length(estYWavelet)  #the number of coefficients used in the linear regression to obtain alpha, beta
 
   BootParam <- matrix(cbind(bootIntercept, bootSlope), ncol=2)
   BootParam <- t(BootParam)
   bootDiffMat <- BootParam - popParam  
-  bootTsq <- R/vBoot*t(bootDiffMat) %*% invS %*% bootDiffMat
+  bootTsq <- vBoot*t(bootDiffMat) %*% invS %*% bootDiffMat
   bootTsq <- as.vector(diag(bootTsq))
 
 
-  APValue <- pf((R-2)/2/(R-1)*Tsq, df1=2, df2=R-2, lower.tail=FALSE)
+  APValue <- pf((numbCoef-2)/2/(numbCoef-1)*Tsq, df1=2, df2=numbCoef-2, lower.tail=FALSE) 
   BPValue <- 1 - (rank(c(Tsq, bootTsq), ties.method="average")[1] - 1)/R 
-
-  print(paste("The asymptotic p-value is ",prettyNum(APValue, format="g", digits=3), 
-              ".  The bootstrap p-value is ", prettyNum(BPValue, format="g", digits=3), sep=''))
-
 
   if(plot==TRUE){
     dots$x <- bootIntercept

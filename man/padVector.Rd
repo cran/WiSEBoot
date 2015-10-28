@@ -31,7 +31,7 @@ logical.  If \code{TRUE}, the estimated linear trend is replaced in the returned
 \details{
 If the data supplied is already a power of 2, this function will just return the original or de-trended data.
 
-If the data supplied is of length, \eqn{t}, the padded data returned will be of length \eqn{T=2^ceiling(log(t, base=2))}.
+If the data supplied is of length, \eqn{t}, the padded data returned will be of length \eqn{T=2^{ceiling(log(t, base=2))}}.
 
 The data length \eqn{T=2^J} for a positive integer, \eqn{J}, requirement is associated with the discrete wavelet transform.  Although methodology exists in the wavelet literature which allows for data series of any length, this methodology does not align with the theory behind WiSE bootstrap.
 

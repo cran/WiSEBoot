@@ -1,4 +1,5 @@
 exportPattern("^[[:alpha:]]+")
 importFrom(wavethresh, wd, wr, accessC, accessD, putD, putC, GenW)
-importFrom(stats, lm, pf, rnorm, sd, var, cov, aggregate)
+importFrom(stats, lm, pf, rnorm, sd, var, cov, aggregate, runif, rexp, rlnorm, uniroot, rbeta, rt)
 importFrom(graphics, abline, lines, par, plot, points)
+importFrom(FAdist, rgumbel)

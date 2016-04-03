@@ -74,6 +74,8 @@ function(X, Y, J0, R=100, popParam=c(0,1), XParam=c(NA,NA), YParam=c(NA, NA),
     vBoot <- log(2^J, base=10)
   }else if(TauSq=="sqrt"){
     vBoot <- sqrt(2^J)
+  }else if (TauSq=="1"){
+    vBoot <- 1
   }else{
     vBoot <- (2^J)^(2/5)
   }

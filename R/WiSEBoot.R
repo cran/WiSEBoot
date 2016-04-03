@@ -91,7 +91,7 @@ function(X, R=100, XParam=NA, TauSq="log", bootDistn="normal",
   if(!is.na(J0)){smoothLevel <- J0+1} else{smoothLevel <- J0}
 
   ##Check bootVar##
-  if(!(TauSq %in% c("log","log10","sqrt","2/5")) ){
+  if(!(TauSq %in% c("log","log10","sqrt","2/5", "1")) ){
     stop("Invalid value for TauSq")
   }
 
@@ -102,6 +102,8 @@ function(X, R=100, XParam=NA, TauSq="log", bootDistn="normal",
     vBoot <- log(2^J, base=10)
   }else if(TauSq=="sqrt"){
     vBoot <- sqrt(2^J)
+  }else if(TauSq=="1"){
+    vBoot <- 1
   }else{
     vBoot <- (2^J)^(2/5)
   }

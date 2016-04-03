@@ -1,17 +1,19 @@
-\name{SimulatedSNR2.0Series}
-\alias{SimulatedSNR2.0Series}
+\name{SimulatedSNR15Series}
+\alias{SimulatedSNR15Series}
 \docType{data}
 \title{
-Simulated Wavelet Signals with SNR=2.0
+Simulated Wavelet Signals with SNR=15
 }
 \description{
-A matrix containing simulated signals with noise added such that the signal-to-noise ratio (SNR) is 2.0.  We have defined the SNR as the (Variance of Noise)/(Variance of Signal).  These series are obtained by adding white noise to the smooth data in \code{SimulatedSmoothSeries}.  Each column contains a wavelet coefficient threshold level and rows contain observations. 
+A matrix containing simulated signals with noise added such that the signal-to-noise ratio (SNR) is 15.  If the signal vector is called \eqn{Y}, and \eqn{Y} is of length \eqn{2^J}, we have defined the SNR within the \eqn{J0=j} threshold as 
+\deqn{SNR=(1/2^J)( (<Y, Y>/(2^j-1)) / (\sigma^2/(2^J - 2^j -1)))}
+where \eqn{\sigma^2} is the variance of the noise.  These series are obtained by adding white noise to the smooth data in \code{SimulatedSmoothSeries}.  Each column contains a wavelet coefficient threshold level and rows contain observations.  
 }
-\usage{data("SimulatedSNR2.0Series")}
+\usage{data("SimulatedSNR15Series")}
 \format{
   The format is:
   
- num [1:1024, 1:9] -0.01014 -0.01667 -0.0086 -0.01215 -0.00873 ...
+ num [1:1024, 1:9] -0.01579 -0.00478 -0.00508 -0.01277 -0.01427 ...
  
  - attr(*, "dimnames")=List of 2
  
@@ -32,16 +34,16 @@ The original smooth series were generated using \code{'wd'} and \code{'wr'} with
 \code{\link[wavethresh]{wavethresh-package}}, \code{\link{SimulatedSmoothSeries}}
 }
 \examples{
-data(SimulatedSNR2.0Series)
+data(SimulatedSNR15Series)
 
 ##See if WiSEBoot selects the correct threshold for this data (J0=3)
 ## R=10 bootstrap samples is not recommended.  For demonstration only.
-bootObj <- WiSEBoot(SimulatedSNR2.0Series[,4], R=10)
+bootObj <- WiSEBoot(SimulatedSNR15Series[,4], R=10)
 bootObj$MSECriteria
 
 ##Look at the noisy data compared to the true smooth
 data(SimulatedSmoothSeries)
-plot(seq(1, 2^10), SimulatedSNR2.0Series[ , 6], main="Threshold of J0=5", 
+plot(seq(1, 2^10), SimulatedSNR15Series[ , 6], main="Threshold of J0=5", 
      col="lightgray", xlab="Time", ylab="Observations", type="l")
 lines(seq(1, 2^10), SimulatedSmoothSeries[ ,6], col="red", lwd=2)
 }

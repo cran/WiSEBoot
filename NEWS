@@ -1,3 +1,21 @@
+# WiSEBoot 1.4.0
+
+##Major changes
+none
+
+##Bug fixes
+none
+
+##Minor changes
+Added TauSq="1" option (typical wild bootstrap) in WiSEBoot and WiSEHypothesisTest.
+Updated the SNR definition and discussion in the vignette.
+Updated the SNR data and documentation to match the correct definition (new files called
+  SimulatedSNR5Series, SimulatedSNR9Series, SimulatedSNR15Series, SimulatedSNR25Series).
+Removed the old SNR data with the incorect definition (old files called
+  SimulatedSNR0.5Series, SimulatedSNR1.0Series, SimulatedSNR1.5Series, SimulatedSNR2.0Series).
+
+
+
 # WiSEBoot 1.3.0
 
 ##Major changes

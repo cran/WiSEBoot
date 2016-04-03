@@ -12,51 +12,51 @@ plot(seq(1, 2^10), SimulatedSmoothSeries[,4], ty="l",
     xlab="Time", ylab="Observation")
 
 ## ----sel3, eval=TRUE, echo=FALSE-----------------------------------------
-data(SimulatedSNR0.5Series); data(SimulatedSNR1.0Series); data(SimulatedSNR1.5Series); data(SimulatedSNR2.0Series)
+data(SimulatedSNR5Series); data(SimulatedSNR9Series); data(SimulatedSNR15Series); data(SimulatedSNR25Series)
 par(mfrow=c(2,2))
-plot(seq(1, 2^10), SimulatedSNR0.5Series[,4], ty="l", 
-    main=bquote(paste("SNR=0.5 Data, Threshold ", J[0],"=3")), 
-    xlab="Time", ylab="Observation", col="gray")
+plot(seq(1, 2^10), SimulatedSNR5Series[,4], ty="l", 
+    main=bquote(paste("SNR=5 Data, Threshold ", J[0],"=3")), 
+    xlab="Time", ylab="Observation", col="gray", ylim=c(-.5, .6))
 lines(seq(1, 2^10), SimulatedSmoothSeries[,4], col="red", lwd=2)
-plot(seq(1, 2^10), SimulatedSNR1.0Series[,4], ty="l", 
-    main=bquote(paste("SNR=1.0 Data, Threshold ", J[0],"=3")), 
-    xlab="Time", ylab="Observation", col="gray")
+plot(seq(1, 2^10), SimulatedSNR9Series[,4], ty="l", 
+    main=bquote(paste("SNR=9 Data, Threshold ", J[0],"=3")), 
+    xlab="Time", ylab="Observation", col="gray", ylim=c(-.5, .6))
 lines(seq(1, 2^10), SimulatedSmoothSeries[,4], col="red", lwd=2)
-plot(seq(1, 2^10), SimulatedSNR1.5Series[,4], ty="l", 
-    main=bquote(paste("SNR=1.5 Data, Threshold ", J[0],"=3")), 
-    xlab="Time", ylab="Observation", col="gray")
+plot(seq(1, 2^10), SimulatedSNR15Series[,4], ty="l", 
+    main=bquote(paste("SNR=15 Data, Threshold ", J[0],"=3")), 
+    xlab="Time", ylab="Observation", col="gray", ylim=c(-.5, .6))
 lines(seq(1, 2^10), SimulatedSmoothSeries[,4], col="red", lwd=2)
-plot(seq(1, 2^10), SimulatedSNR2.0Series[,4], ty="l", 
-    main=bquote(paste("SNR=2.0 Data, Threshold ", J[0],"=3")), 
-    xlab="Time", ylab="Observation", col="gray")
+plot(seq(1, 2^10), SimulatedSNR25Series[,4], ty="l", 
+    main=bquote(paste("SNR=25 Data, Threshold ", J[0],"=3")), 
+    xlab="Time", ylab="Observation", col="gray", ylim=c(-.5, .6))
 lines(seq(1, 2^10), SimulatedSmoothSeries[,4], col="red", lwd=2)
 
 ## ----sel4, echo=TRUE, eval=TRUE, out.width='1.1\\textwidth', out.height='17cm'----
-smoothPlot <- smoothTimeSeries(SimulatedSNR1.0Series[ ,4], plot="all")
+smoothPlot <- smoothTimeSeries(SimulatedSNR15Series[ ,4], plot="all")
 
 ## ----sel5, echo=TRUE, eval=TRUE------------------------------------------
 set.seed(1414)
-SNR10Boot <- WiSEBoot(SimulatedSNR1.0Series[ ,4], R=10)
-SNR10Boot$MSECriteria
+SNR15Boot <- WiSEBoot(SimulatedSNR15Series[ ,4], R=10)
+SNR15Boot$MSECriteria
 
 ## ----sel6, echo=TRUE, eval=TRUE, out.width='13cm', out.height='7cm'------
 par(mfrow=c(1,2))
-boxplot(SNR10Boot$BootIntercept, 
+boxplot(SNR15Boot$BootIntercept, 
         main=expression(paste("R=10 Bootstrap Estimates of ", gamma[0])),
         ylab=expression(hat(gamma)[0][b]))
 abline(h=0, col="red")
-abline(h=)
-boxplot(SNR10Boot$BootSlope, 
+
+boxplot(SNR15Boot$BootSlope, 
         main=expression(paste("R=10 Bootstrap Estimates of ", gamma[1])),
         ylab=expression(hat(gamma)[1][b]))
 abline(h=0, col="red")
 
 ## ----sel7, echo=TRUE, eval=TRUE, out.width='15cm', out.height='7cm'------
 par(mfrow=c(1,2))
-boxplot(SNR10Boot$BootWavelet[,3], 
+boxplot(SNR15Boot$BootWavelet[,3], 
         main=expression(paste("R=10 Boot. Est. of lvl=1, coef=1, ", gamma)),
         ylab=expression(hat(gamma)[b]))
-boxplot(SNR10Boot$BootWavelet[,4], 
+boxplot(SNR15Boot$BootWavelet[,4], 
         main=expression(paste("R=10 Boot. Est. of lvl=1, coef=2, ", gamma)),
         ylab=expression(hat(gamma)[b]))
 

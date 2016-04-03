@@ -28,7 +28,7 @@ number of bootstrap samples.  Allowed value is a positive integer.  Default is 1
 vector or matrix of linear trend parameters for the data series.  If a vector is supplied in \code{X}, this should be a vector of length 2.  If a matrix is supplied in \code{X}, this should be a matrix with 2 rows and an equal of columns (\code{dim(X)[2]=dim(XParam)[2]}).  If \code{NA}, \code{WiSEBoot} will automatically estimate linear parameters via least squares.  This quantity may be supplied by the \code{linearParam} return argument of \code{padVector} or \code{padMatrix}.  See Details below.
 }
   \item{TauSq}{
-scale parameter for the bootstrap.  Allowed values are \code{"log", "log10", "sqrt"}, or \code{"2/5"}.  The scale parameter is related to the length of the data series.  For example, \code{"log"} implies a value of the scale parameter, \eqn{\tau}, of \eqn{\sqrt{log(T)}}.
+scale parameter for the bootstrap.  Allowed values are \code{"log", "log10", "sqrt", "1"}, or \code{"2/5"}.  The scale parameter is related to the length of the data series.  For example, \code{"log"} implies a value of the scale parameter, \eqn{\tau}, of \eqn{\sqrt{log(T)}}.  The value of \code{"1"} creates an equivalent situation to wild bootstrap.
 }
   \item{bootDistn}{
 the distribution for the bootstrap.  Allowed values are \code{"normal"}, \code{"uniform"}, \code{"laplace"}, \code{"lognormal"}, \code{"gumbel"}, \code{"exponential"}, \code{"t5"}, \code{"t8"}, and \code{"t14"}.  This draws iid random samples from the specified distribution for the wild bootstrap where the random variables have mean 0 and variance 1.  For example, \code{"t5"} is Student's t-distribution with 5 degrees of freedom.
@@ -104,8 +104,8 @@ Megan Heyman
 ##R=10 bootstrap samples is not recommended.  For demonstration only.
 
 ##bootstrap one of the simulated series, threshold level 4 (not the truth)
-data(SimulatedSNR1.5Series)
-bootObj <- WiSEBoot(SimulatedSNR1.5Series[, 3], R=10, J0=4)
+data(SimulatedSNR15Series)
+bootObj <- WiSEBoot(SimulatedSNR15Series[, 3], R=10, J0=4)
 
 #boxplot of the bootstrap intercept and slope estimates (both 0 in truth)
 par(mfrow=c(1,2))
@@ -117,7 +117,7 @@ boxplot(bootObj$BootWavelet[ , 3, 1]); boxplot(bootObj$BootWavelet[ , 4, 1])
 
 
 ##See what smooth level the bootstrap chooses (truth is J0=2)
-bootObj2 <- WiSEBoot(SimulatedSNR1.5Series[ ,3], R=10)
+bootObj2 <- WiSEBoot(SimulatedSNR15Series[ ,3], R=10)
 bootObj2$MSECriteria
 }
 

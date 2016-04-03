@@ -11,8 +11,8 @@ The Wild Scale-Enhanced (WiSE) bootstrap method is implemented for models which 
 \tabular{ll}{
 Package: \tab WiSEBoot\cr
 Type: \tab Package\cr
-Version: \tab 1.3.0\cr
-Date: \tab 2015-10-28\cr
+Version: \tab 1.4.0\cr
+Date: \tab 2016-03-31\cr
 License: \tab GPL-2\cr
 }
 
@@ -65,8 +65,8 @@ For an overview of wavelet methods using \code{wavethresh} in R, see "Wavelet Me
 ##  R=10 bootstrap samples is not recommended.  For demonstration only.
 
 ##Select a wavelet smooth level for signal
-data("SimulatedSNR1.0Series")
-bootObj <- WiSEBoot(SimulatedSNR1.0Series[,4], R=10)
+data("SimulatedSNR9Series")
+bootObj <- WiSEBoot(SimulatedSNR9Series[,4], R=10)
 bootObj$MSECriteria #check WiSEBoot selected threshold (minimum MSE) -- truth is J0=3
 
 ##Test whether \alpha=0 and \beta=1 for AIRS and IPSL Run 1 at 60E

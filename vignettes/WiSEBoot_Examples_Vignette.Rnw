@@ -113,71 +113,71 @@ plot(seq(1, 2^10), SimulatedSmoothSeries[,4], ty="l",
 @
 }
 
-If data were observed from a population signal such as this, the data would be noisy.  The matrices \texttt{SimulatedSNR0.5Series}, \texttt{SimulatedSNR1.0Series}, \texttt{SimulatedSNR1.5Series}, and \texttt{SimulatedSNR2.0Series} contain data series with population signals from \texttt{SimulatedSmoothSeries} and varying levels of added noise.  Defining the signal-to-noise ratio (SNR) as 
-\begin{center}
-SNR=(Variance of Signal)/(Variance of Noise), 
-\end{center}
-these matrices contain data series with SNR=0.5, 1.0, 1.5 and 2.0.  It seems reasonable to assume that the signal would be more apparent in the SNR=2.0 series than the SNR=0.5 series.  
+\sloppy If data were observed from a population signal such as this, the data would be noisy.  The matrices \texttt{SimulatedSNR5Series}, \texttt{SimulatedSNR9Series}, \texttt{SimulatedSNR15Series}, and \texttt{SimulatedSNR25Series} contain data series with population signals from \texttt{SimulatedSmoothSeries} and varying levels of added noise.  For data of length $2^J$ and a signal, $\bm{\mu(t)}$, with threshold $J_0$, the signal-to-noise ratio (SNR) is defined as 
+ \begin{equation}
+ SNR = \dfrac{<\bm{\mu(t)}, \bm{\mu(t)}>/(2^{J_{0}+1}-1)}{(2^J)\sigma^2/(2^J-2^{J_{0}+1} + 1)}
+ \end{equation}
+when $\sigma^2$ is the variance of the noise.  Our SNR is similar to an F-ratio, and in other contexts, the user may wish to take the square-root of the SNR in discussion.  The provided data matrices contain series with SNR=5, 9, 15 and 25.  It seems reasonable to assume that the signal would be more apparent in the SNR=25 series than the SNR=5 series.  
 
 \newpage
 Here is a look at the 'noisy data':
 
 <<sel3, eval=TRUE, echo=FALSE>>=
-data(SimulatedSNR0.5Series); data(SimulatedSNR1.0Series); data(SimulatedSNR1.5Series); data(SimulatedSNR2.0Series)
+data(SimulatedSNR5Series); data(SimulatedSNR9Series); data(SimulatedSNR15Series); data(SimulatedSNR25Series)
 par(mfrow=c(2,2))
-plot(seq(1, 2^10), SimulatedSNR0.5Series[,4], ty="l", 
-    main=bquote(paste("SNR=0.5 Data, Threshold ", J[0],"=3")), 
-    xlab="Time", ylab="Observation", col="gray")
+plot(seq(1, 2^10), SimulatedSNR5Series[,4], ty="l", 
+    main=bquote(paste("SNR=5 Data, Threshold ", J[0],"=3")), 
+    xlab="Time", ylab="Observation", col="gray", ylim=c(-.5, .6))
 lines(seq(1, 2^10), SimulatedSmoothSeries[,4], col="red", lwd=2)
-plot(seq(1, 2^10), SimulatedSNR1.0Series[,4], ty="l", 
-    main=bquote(paste("SNR=1.0 Data, Threshold ", J[0],"=3")), 
-    xlab="Time", ylab="Observation", col="gray")
+plot(seq(1, 2^10), SimulatedSNR9Series[,4], ty="l", 
+    main=bquote(paste("SNR=9 Data, Threshold ", J[0],"=3")), 
+    xlab="Time", ylab="Observation", col="gray", ylim=c(-.5, .6))
 lines(seq(1, 2^10), SimulatedSmoothSeries[,4], col="red", lwd=2)
-plot(seq(1, 2^10), SimulatedSNR1.5Series[,4], ty="l", 
-    main=bquote(paste("SNR=1.5 Data, Threshold ", J[0],"=3")), 
-    xlab="Time", ylab="Observation", col="gray")
+plot(seq(1, 2^10), SimulatedSNR15Series[,4], ty="l", 
+    main=bquote(paste("SNR=15 Data, Threshold ", J[0],"=3")), 
+    xlab="Time", ylab="Observation", col="gray", ylim=c(-.5, .6))
 lines(seq(1, 2^10), SimulatedSmoothSeries[,4], col="red", lwd=2)
-plot(seq(1, 2^10), SimulatedSNR2.0Series[,4], ty="l", 
-    main=bquote(paste("SNR=2.0 Data, Threshold ", J[0],"=3")), 
-    xlab="Time", ylab="Observation", col="gray")
+plot(seq(1, 2^10), SimulatedSNR25Series[,4], ty="l", 
+    main=bquote(paste("SNR=25 Data, Threshold ", J[0],"=3")), 
+    xlab="Time", ylab="Observation", col="gray", ylim=c(-.5, .6))
 lines(seq(1, 2^10), SimulatedSmoothSeries[,4], col="red", lwd=2)
 @
 
-We can see that the true signal is fairly clear in each of these data series, but the lower SNR series are noisier.  Typically, the analyst would not know the true signal threshold level.  The \texttt{smoothTimeSeries} function allows for a quick visualization of all possible wavelet coefficient threshold levels.  This is especially useful if the analyst would like to manually choose a wavelet coefficient threshold level.  Using the SNR=1.0 series, we can demonstrate this capability.  Note, the wavelet settings for these smooths generated below exactly match the true signals from \texttt{SimulatedSmoothSeries}.  The user could change the wavelet family, filter, and boundary.
+We can see that the true signal is somewhat hidden in each of these data series, but the lower SNR series are noisier.  Typically, the analyst would not know the true signal threshold level.  The \texttt{smoothTimeSeries} function allows for a quick visualization of all possible wavelet coefficient threshold levels.  This is especially useful if the analyst would like to manually choose a wavelet coefficient threshold level.  Using the SNR=15 series, we can demonstrate this capability.  Note, the wavelet settings for these smooths generated below exactly match the true signals from \texttt{SimulatedSmoothSeries}.  The user could change the wavelet family, filter, and boundary.
 
 {\footnotesize
 <<sel4, echo=TRUE, eval=TRUE, out.width='1.1\\textwidth', out.height='17cm'>>=
-smoothPlot <- smoothTimeSeries(SimulatedSNR1.0Series[ ,4], plot="all")
+smoothPlot <- smoothTimeSeries(SimulatedSNR15Series[ ,4], plot="all")
 @
 }
 
-Without knowing the truth, an analyst may guess that the wavelet threshold level could be any of $J_0 \in \{2, 3, 4\}$.  We can use the \texttt{WiSEBoot} function to remove the guess-work and automatically choose a wavelet threshold.  As discussed in Section \ref{ModSel}, the model which achieves the minimum of the mean-squared error is selected.  Let's leave the default wavelet settings again (which exactly match the true signal wavelet here) and look at the MSE criteria for B=\texttt{R=10} bootstrap samples.  Typically, a larger number of bootstrap samples is used, as these may be generated in parallel.  We choose a lower number in the vignette for the sake of time.
+Without knowing the truth, an analyst may guess that the wavelet threshold level could be any of $J_0 \in \{ 3, 4, 5 \}$.  We can use the \texttt{WiSEBoot} function to remove the guess-work and automatically choose a wavelet threshold.  As discussed in Section \ref{ModSel}, the model which achieves the minimum of the mean-squared error is selected.  Let's leave the default wavelet settings again (which exactly match the true signal wavelet here) and look at the MSE criteria for B=\texttt{R=10} bootstrap samples.  Typically, a larger number of bootstrap samples is used, as these may be generated in parallel.  We choose a lower number in the vignette for the sake of time.
 
 {\footnotesize
 <<sel5, echo=TRUE, eval=TRUE>>=
 set.seed(1414)
-SNR10Boot <- WiSEBoot(SimulatedSNR1.0Series[ ,4], R=10)
-SNR10Boot$MSECriteria
+SNR15Boot <- WiSEBoot(SimulatedSNR15Series[ ,4], R=10)
+SNR15Boot$MSECriteria
 @
 }
 
-Even in this small bootstrap sample, the correct model was selected.  We can see at $J_0 + 1=4$ the mean of the MSE is minimized with a value of \Sexpr{prettyNum(SNR10Boot$MSECriteria[6,2], digits=3)}.  The reader should keep in mind that this is a simulation example, so a desirable result is not surprising.
+Even in this small bootstrap sample, the correct model was selected.  We can see at $J_0 + 1=4$ the mean of the MSE is minimized with a value of \Sexpr{prettyNum(SNR15Boot$MSECriteria[6,2], digits=3)}.  The reader should keep in mind that this is a simulation example, so a desirable result is not surprising.
 
 
 
-Now, we have an automatically selected model with threshold $J_0=3$.  The output \texttt{WiSEBoot} object, called \texttt{SNR10Boot}, contains not only the model selection, but also the estimated parameters from each bootstrap sample in the selected model.  Thus, the distributions of the $\gamma_0$, $\gamma_1$ and $\gamma$ parameters may be examined by visualizing the bootstrap estimates.  
+Now, we have an automatically selected model with threshold $J_0=3$.  The output \texttt{WiSEBoot} object, called \texttt{SNR15Boot}, contains not only the model selection, but also the estimated parameters from each bootstrap sample in the selected model.  Thus, the distributions of the $\gamma_0$, $\gamma_1$ and $\gamma$ parameters may be examined by visualizing the bootstrap estimates.  
 
 The boxplots below show the empirical distributions of the parametric linear parameter estimates ($\hat{\gamma}_{0b}, \hat{\gamma}_{1b}$).  Because the data was simulated, the population parameters are known to be $\gamma_0=0, \gamma_1=0$.
 
 {\footnotesize
 <<sel6, echo=TRUE, eval=TRUE, out.width='13cm', out.height='7cm'>>=
 par(mfrow=c(1,2))
-boxplot(SNR10Boot$BootIntercept, 
+boxplot(SNR15Boot$BootIntercept, 
         main=expression(paste("R=10 Bootstrap Estimates of ", gamma[0])),
         ylab=expression(hat(gamma)[0][b]))
 abline(h=0, col="red")
-abline(h=)
-boxplot(SNR10Boot$BootSlope, 
+
+boxplot(SNR15Boot$BootSlope, 
         main=expression(paste("R=10 Bootstrap Estimates of ", gamma[1])),
         ylab=expression(hat(gamma)[1][b]))
 abline(h=0, col="red")
@@ -191,10 +191,10 @@ Likewise, any individual non-thresholded filter wavelet coefficient may be visua
 {\footnotesize
 <<sel7, echo=TRUE, eval=TRUE, out.width='15cm', out.height='7cm'>>=
 par(mfrow=c(1,2))
-boxplot(SNR10Boot$BootWavelet[,3], 
+boxplot(SNR15Boot$BootWavelet[,3], 
         main=expression(paste("R=10 Boot. Est. of lvl=1, coef=1, ", gamma)),
         ylab=expression(hat(gamma)[b]))
-boxplot(SNR10Boot$BootWavelet[,4], 
+boxplot(SNR15Boot$BootWavelet[,4], 
         main=expression(paste("R=10 Boot. Est. of lvl=1, coef=2, ", gamma)),
         ylab=expression(hat(gamma)[b]))
 @

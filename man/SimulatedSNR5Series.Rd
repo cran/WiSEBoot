@@ -1,13 +1,15 @@
-\name{SimulatedSNR0.5Series}
-\alias{SimulatedSNR0.5Series}
+\name{SimulatedSNR5Series}
+\alias{SimulatedSNR5Series}
 \docType{data}
 \title{
-Simulated Wavelet Series with SNR=0.5
+Simulated Wavelet Series with SNR=5
 }
 \description{
-A matrix containing simulated signals with noise added such that the signal-to-noise ratio (SNR) is 0.5.  We have defined the SNR as the (Variance of Noise)/(Variance of Signal).  These series are obtained by adding white noise to the smooth data in \code{SimulatedSmoothSeries}.  Each column contains a wavelet coefficient threshold level and rows contain observations.  
+A matrix containing simulated signals with noise added such that the signal-to-noise ratio (SNR) is 5.  If the signal vector is called \eqn{Y}, and \eqn{Y} is of length \eqn{2^J}, we have defined the SNR within the \eqn{J0=j} threshold as 
+\deqn{SNR=(1/2^J)( (<Y, Y>/(2^j-1)) / (\sigma^2/(2^J - 2^j -1)))}
+where \eqn{\sigma^2} is the variance of the noise.  These series are obtained by adding white noise to the smooth data in \code{SimulatedSmoothSeries}.  Each column contains a wavelet coefficient threshold level and rows contain observations.  
 }
-\usage{data("SimulatedSNR0.5Series")}
+\usage{data("SimulatedSNR5Series")}
 \format{
   The format is:
   
@@ -32,16 +34,16 @@ The original smooth series were generated using \code{'wd'} and \code{'wr'} with
 \code{\link[wavethresh]{wavethresh-package}}, \code{\link{SimulatedSmoothSeries}}
 }
 \examples{
-data(SimulatedSNR0.5Series)
+data(SimulatedSNR5Series)
 
 ##See if WiSEBoot selects the correct threshold for this data (J0=3)
 ## R=10 bootstrap samples is not recommended.  For demonstration only.
-bootObj <- WiSEBoot(SimulatedSNR0.5Series[,4], R=10)
+bootObj <- WiSEBoot(SimulatedSNR5Series[,4], R=10)
 bootObj$MSECriteria
 
 ##Look at the noisy data compared to the true smooth
 data(SimulatedSmoothSeries)
-plot(seq(1, 2^10), SimulatedSNR0.5Series[ , 6], main="Threshold of J0=5", 
+plot(seq(1, 2^10), SimulatedSNR5Series[ , 6], main="Threshold of J0=5", 
      col="lightgray", xlab="Time", ylab="Observations", type="l")
 lines(seq(1, 2^10), SimulatedSmoothSeries[ ,6], col="red", lwd=2)
 }
